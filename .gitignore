@@ -1,2 +1,9 @@
+# Ignore secret key files
+.env
+.env.local
+secrets.env
+
+# Ignore runtime logs
 webhook_debug.txt
-config.php
+
+# ❌ No need to ignore config.php anymore if it only uses getenv()

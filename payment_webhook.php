@@ -281,6 +281,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
       'amount' => $payment['amount'],
       'xendit_invoice_id' => $payment['xendit_invoice_id'],
       'created_at' => $createdPH,
+      'payment_method' => $booking['payment_method'] ?? 'xendit',
       'qty' => $qty,
       'status' => $payment['status'] ?? 'pending',
     ];
