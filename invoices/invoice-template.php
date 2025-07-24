@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Invoice</title>
@@ -19,7 +20,8 @@
       padding: 15px;
     }
 
-    .header, .footer {
+    .header,
+    .footer {
       text-align: center;
       margin-bottom: 15px;
     }
@@ -38,7 +40,8 @@
       padding-bottom: 3px;
     }
 
-    .summary, .table {
+    .summary,
+    .table {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 8px;
@@ -48,7 +51,8 @@
       padding: 4px 3px;
     }
 
-    .table th, .table td {
+    .table th,
+    .table td {
       border: 1px solid #ddd;
       padding: 4px 5px;
     }
@@ -80,6 +84,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <!-- Header -->
@@ -93,34 +98,72 @@
     <!-- Invoice Info -->
     <div class="section-title">Invoice</div>
     <table class="summary">
-      <tr><td><strong>Invoice #:</strong></td><td><?= $invoiceNumber ?></td></tr>
-      <tr><td><strong>Booking Code:</strong></td><td><?= $bookingData['booking_code'] ?></td></tr>
-      <tr><td><strong>Status:</strong></td><td><?= $paymentData['status'] ?> via <?= strtoupper($paymentData['payment_method']) ?></td></tr>
-      <tr><td><strong>Date Issued:</strong></td><td><?= $paymentData['created_at'] ?? date('Y-m-d H:i:s') ?></td></tr>
+      <tr>
+        <td><strong>Invoice #:</strong></td>
+        <td><?= $invoiceNumber ?></td>
+      </tr>
+      <tr>
+        <td><strong>Booking Code:</strong></td>
+        <td><?= $bookingData['booking_code'] ?></td>
+      </tr>
+      <tr>
+        <td><strong>Status:</strong></td>
+        <td><?= $paymentData['status'] ?> via <?= strtoupper($paymentData['payment_method']) ?></td>
+      </tr>
+      <tr>
+        <td><strong>Date Issued:</strong></td>
+        <td><?= date('F j, Y g:i A', strtotime($paymentData['created_at'] ?? date('Y-m-d H:i:s'))) ?></td>
+      </tr>
     </table>
 
     <!-- Customer Info -->
     <div class="section-title">Customer</div>
     <table class="summary">
-      <tr><td><strong>Name:</strong></td><td><?= $customerName ?></td></tr>
-      <tr><td><strong>Email:</strong></td><td><?= $customerEmail ?></td></tr>
-      <tr><td><strong>Contact:</strong></td><td><?= $customerPhone ?></td></tr>
+      <tr>
+        <td><strong>Name:</strong></td>
+        <td><?= $customerName ?></td>
+      </tr>
+      <tr>
+        <td><strong>Email:</strong></td>
+        <td><?= $customerEmail ?></td>
+      </tr>
+      <tr>
+        <td><strong>Contact:</strong></td>
+        <td><?= $customerPhone ?></td>
+      </tr>
     </table>
 
     <!-- Booking -->
     <div class="section-title">Booking</div>
     <table class="summary">
-      <tr><td><strong>Room:</strong></td><td><?= $roomName ?></td></tr>
-      <tr><td><strong>Check-in:</strong></td><td><?= $bookingData['check_in_date'] ?> @ <?= $bookingData['check_in_time'] ?></td></tr>
-      <tr><td><strong>Check-out:</strong></td><td><?= $bookingData['check_out_date'] ?? '—' ?></td></tr>
-      <tr><td><strong>Guests:</strong></td><td><?= $bookingData['adults'] ?> Adults, <?= $bookingData['children'] ?> Children</td></tr>
+      <tr>
+        <td><strong>Room:</strong></td>
+        <td><?= $roomName ?? 'Room N/A' ?></td>
+      </tr>
+      <tr>
+        <td><strong>Check-in:</strong></td>
+        <td><?= $bookingData['check_in_date'] ?> @ <?= $bookingData['check_in_time'] ?></td>
+      </tr>
+      <tr>
+        <td><strong>Check-out:</strong></td>
+        <td><?= $bookingData['check_out_date'] ?? '—' ?></td>
+      </tr>
+      <tr>
+        <td><strong>Guests:</strong></td>
+        <td><?= $bookingData['adults'] ?> Adults, <?= $bookingData['children'] ?> Children</td>
+      </tr>
     </table>
 
     <!-- Payment -->
     <div class="section-title">Payment Summary</div>
     <table class="table">
       <thead>
-        <tr><th>Description</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
+        <tr>
+          <th>Description</th>
+          <th>Qty</th>
+          <th>Unit Price</th>
+          <th>Total</th>
+        </tr>
       </thead>
       <tbody>
         <tr>
@@ -154,4 +197,5 @@
     </div>
   </div>
 </body>
+
 </html>

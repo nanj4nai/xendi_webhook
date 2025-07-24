@@ -73,7 +73,7 @@ $roomData = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // 👇 ADD this to prevent undefined $room
 $room = $roomData;
-
+$qty = 1;
 // 7. Fetch payment record
 $stmt = $pdo->prepare("SELECT * FROM payments WHERE booking_id = ? AND xendit_invoice_id = ?");
 $stmt->execute([$bookingId, $invoiceId]);
@@ -159,7 +159,9 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     $bookingData['booking_code'] = $booking['booking_code'] ?? 'UNKNOWN';
     $bookingData['check_in_date'] = $booking['check_in_date'];
     $bookingData['check_in_time'] = $booking['check_in_time'];
-    $bookingData['check_out_date'] = $booking['check_out_date'] ?? null;
+    $bookingData['check_out_date'] = $bookingData['check_out_date'] ?? '—';
+    $paymentData['qty'] = $paymentData['qty'] ?? 1;
+    $paymentData['xendit_invoice_id'] = $paymentData['xendit_invoice_id'] ?? '—';
     $bookingData['adults'] = $booking['adults'] ?? 2;
     $bookingData['children'] = $booking['children'] ?? 0;
 
@@ -234,7 +236,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     $businessEmail = "fo.villarosal2025@gmail.com";
     $businessPhone = "0985 895 1990";
 
-    $invoiceNumber = $payment['xendit_invoice_id'] ?? '—';
+    $invoiceNumber = $paymentData['xendit_invoice_id'] ?? 'N/A';
     $invoiceDate = date("F j, Y");
     $dueDate = date("F j, Y", strtotime("+1 day"));
 
@@ -270,11 +272,11 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     }
 
     // ✅ Then use the fresh $payment below
-    $createdUtc = new DateTime($payment['created_at'], new DateTimeZone('UTC'));
+    $createdUtc = new DateTime($payment['created'] ?? 'now', new DateTimeZone('UTC'));
     $createdUtc->setTimezone(new DateTimeZone('Asia/Manila'));
     $createdPH = $createdUtc->format('F j, Y \a\t g:i A');
 
-    $qty = 1;
+
     $paymentData = [
       'base_price' => $room['price'] ?? 0,
       'fee' => $payment['amount'] - ($room['price'] * $qty),
@@ -292,6 +294,15 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
       'invoice_id' => $paymentData['xendit_invoice_id']
     ]);
     $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($qrData) . '&size=200x200';
+
+    $invoiceDir = __DIR__ . "/invoices";
+    if (!is_dir($invoiceDir)) {
+      mkdir($invoiceDir, 0777, true);
+    }
+    $pdfSavePath = "$invoiceDir/$pdfFilename";
+
+
+    file_put_contents($pdfSavePath, $pdfOutput);
     // Generate the PDF as usual
     ob_start();
     include 'invoices/invoice-template.php';
@@ -312,15 +323,19 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     file_put_contents($pdfSavePath, $pdfOutput);
 
     // ✅ Create public URL to send in the email
-    $invoiceUrl = "https://villarosal.free.nf/php/invoices/$pdfFilename";
+    $pdfLinkUrl = "https://villarosal.free.nf/php/invoices/$pdfFilename";
 
     // 📧 Email the link
     $mail->isHTML(true);
     $mail->Subject = "Your Booking Invoice";
     $mail->Body = "
-  <p>Thank you for your booking!</p>
-  <p>You can view/download your invoice here:</p>
-  <a href='$invoiceUrl' target='_blank'>$invoiceUrl</a>
+  Hello $customerName,<br><br>
+  Thank you for your payment. Please find your booking invoice below:<br><br>
+  <a href='$pdfLinkUrl' target='_blank'>Download your invoice (PDF)</a><br><br>
+  Booking Code: <strong>$bookingCode</strong><br>
+  Payment Method: $ewalletType<br>
+  Payment Status: $paymentStatus<br><br>
+  -- Villarosa Booking System
 ";
 
     $mail->send();
