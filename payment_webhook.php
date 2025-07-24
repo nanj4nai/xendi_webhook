@@ -20,10 +20,10 @@ $config = require 'config.php';
 $expectedToken = $config['xendit_webhook_token'] ?? '';
 $callbackToken = $_SERVER['HTTP_X_CALLBACK_TOKEN'] ?? '';
 
-file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - Received callback token: $callbackToken\n", FILE_APPEND);
+file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - Expected token: $expectedToken | Received token: $callbackToken\n", FILE_APPEND);
 
 if ($callbackToken !== $expectedToken) {
-  file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - Invalid callback token\n", FILE_APPEND);
+  file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - Expected token: $expectedToken | Received token: $callbackToken\n", FILE_APPEND);
   http_response_code(403);
   echo "❌ Invalid callback token";
   exit;
@@ -37,19 +37,21 @@ if (!isset($data['id'], $data['status'], $data['external_id'])) {
   exit;
 }
 
+
 $invoiceId = $data['id'];
 $paymentStatus = strtolower($data['status']);
 
 // 4. Extract booking ID
 if (preg_match('/booking_(\d+)/', $data['external_id'], $matches)) {
-  $bookingId = (int)$matches[1];
-  file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - Extracted booking ID: $bookingId\n", FILE_APPEND);
+    $bookingId = (int)$matches[1];
+    file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - Extracted booking ID: $bookingId\n", FILE_APPEND);
 } else {
-  file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - Could not extract booking ID from external_id: {$data['external_id']}\n", FILE_APPEND);
-  http_response_code(400);
-  echo "❌ Invalid external_id format";
-  exit;
+    file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - Could not extract booking ID from external_id: {$data['external_id']}\n", FILE_APPEND);
+    http_response_code(400);
+    echo "❌ Invalid external_id format";
+    exit;
 }
+
 // 5. Fetch booking data
 $stmt = $pdo->prepare("SELECT * FROM bookings WHERE booking_id = ?");
 $stmt->execute([$bookingId]);
@@ -268,17 +270,17 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     }
 
     // ✅ Then use the fresh $payment below
-    $createdUtc = new DateTime($payment['created'], new DateTimeZone('UTC'));
+    $createdUtc = new DateTime($payment['created_at'], new DateTimeZone('UTC'));
     $createdUtc->setTimezone(new DateTimeZone('Asia/Manila'));
     $createdPH = $createdUtc->format('F j, Y \a\t g:i A');
 
+    $qty = 1;
     $paymentData = [
       'base_price' => $room['price'] ?? 0,
       'fee' => $payment['amount'] - ($room['price'] * $qty),
       'amount' => $payment['amount'],
       'xendit_invoice_id' => $payment['xendit_invoice_id'],
       'created_at' => $createdPH,
-      'payment_method' => $payment['payment_channel'] ?? 'xendit',
       'qty' => $qty,
       'status' => $payment['status'] ?? 'pending',
     ];
@@ -314,8 +316,8 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
       exit("Failed to generate PDF");
     }
 
-    $pdfPath = __DIR__ . "/invoices/booking_invoice_{$bookingCode}.pdf";
-    file_put_contents($pdfPath, $pdfOutput);
+    //$pdfPath = __DIR__ . "/invoices/booking_invoice_{$bookingCode}.pdf";
+    //file_put_contents($pdfPath, $pdfOutput);
 
     // Send via email
     $mail->addAttachment($pdfPath);
