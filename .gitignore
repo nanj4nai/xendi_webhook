@@ -1,3 +1,2 @@
-/vendor/
-/.env
-/webhook_debug.txt
+webhook_debug.txt
+config.php
