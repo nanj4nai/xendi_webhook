@@ -43,13 +43,13 @@ $paymentStatus = strtolower($data['status']);
 
 // 4. Extract booking ID
 if (preg_match('/booking_(\d+)/', $data['external_id'], $matches)) {
-    $bookingId = (int)$matches[1];
-    file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - Extracted booking ID: $bookingId\n", FILE_APPEND);
+  $bookingId = (int)$matches[1];
+  file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - Extracted booking ID: $bookingId\n", FILE_APPEND);
 } else {
-    file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - Could not extract booking ID from external_id: {$data['external_id']}\n", FILE_APPEND);
-    http_response_code(400);
-    echo "❌ Invalid external_id format";
-    exit;
+  file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - Could not extract booking ID from external_id: {$data['external_id']}\n", FILE_APPEND);
+  http_response_code(400);
+  echo "❌ Invalid external_id format";
+  exit;
 }
 
 // 5. Fetch booking data
@@ -292,7 +292,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
       'invoice_id' => $paymentData['xendit_invoice_id']
     ]);
     $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($qrData) . '&size=200x200';
-
+    // Generate the PDF as usual
     ob_start();
     include 'invoices/invoice-template.php';
     $html = ob_get_clean();
@@ -301,28 +301,31 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     $dompdf->setPaper('A4', 'portrait');
     $dompdf->render();
 
+    // Output PDF
+    $pdfOutput = $dompdf->output();
+
     $bookingCode = $bookingData['booking_code'] ?? 'UNKNOWN';
 
-    if ($bookingCode === 'UNKNOWN') {
-      file_put_contents("webhook_debug.txt", "booking_code is missing for booking_id $bookingId\n", FILE_APPEND);
-      http_response_code(400);
-      exit("Missing booking_code");
-    }
+    // ✅ Save PDF file in public invoices/ folder
+    $pdfFilename = "booking_invoice_{$bookingCode}.pdf";
+    $pdfSavePath = __DIR__ . "/php/invoices/$pdfFilename"; // Must match public path
+    file_put_contents($pdfSavePath, $pdfOutput);
 
-    // Save or stream PDF
-    $pdfOutput = $dompdf->output();
-    if (!$pdfOutput) {
-      file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - PDF rendering failed\n", FILE_APPEND);
-      http_response_code(500);
-      exit("Failed to generate PDF");
-    }
+    // ✅ Create public URL to send in the email
+    $invoiceUrl = "https://villarosal.free.nf/php/invoices/$pdfFilename";
 
-    //$pdfPath = __DIR__ . "/invoices/booking_invoice_{$bookingCode}.pdf";
-    //file_put_contents($pdfPath, $pdfOutput);
+    // 📧 Email the link
+    $mail->isHTML(true);
+    $mail->Subject = "Your Booking Invoice";
+    $mail->Body = "
+  <p>Thank you for your booking!</p>
+  <p>You can view/download your invoice here:</p>
+  <a href='$invoiceUrl' target='_blank'>$invoiceUrl</a>
+";
 
-    // Send via email
-    $mail->addAttachment($pdfPath);
     $mail->send();
+
+
 
     file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - Email sent to {$bookingData['email']}\n", FILE_APPEND);
   } catch (Exception $e) {
