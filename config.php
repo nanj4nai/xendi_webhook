@@ -1,13 +1,10 @@
 <?php
-// config.php
 return [
-    'xendit_api_key' => 'REPLACE_THIS',
-    'xendit_webhook_token' => 'REPLACE_THIS',
-
-    'sendgrid_api_key' => 'REPLACE_THIS',
-    'email_from' => 'noreply@example.com',
-    'email_from_name' => 'Villa Rosal Beach Resort',
-
-    'supabase_key' => 'REPLACE_THIS',
-    'supabase_url' => 'REPLACE_THIS',
+    'xendit_api_key' => getenv('XENDIT_API_KEY'),
+    'xendit_webhook_token' => getenv('XENDIT_WEBHOOK_TOKEN'),
+    'sendgrid_api_key' => getenv('SENDGRID_API_KEY'),
+    'email_from' => getenv('EMAIL_FROM'),
+    'email_from_name' => getenv('EMAIL_FROM_NAME'),
+    'supabase_key' => getenv('SUPABASE_KEY'),
+    'supabase_url' => getenv('SUPABASE_URL'),
 ];
