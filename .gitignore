@@ -1,9 +1,14 @@
-# Ignore secret key files
+# Environment / secrets
 .env
 .env.local
 secrets.env
 
-# Ignore runtime logs
+# Logs / debug
 webhook_debug.txt
 
-# ❌ No need to ignore config.php anymore if it only uses getenv()
+# Composer dependencies (will be installed via Docker)
+vendor/
+
+# Node / frontend cache (optional)
+node_modules/
+dist/
