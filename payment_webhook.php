@@ -237,7 +237,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     $businessEmail = "fo.villarosal2025@gmail.com";
     $businessPhone = "0985 895 1990";
 
-    $invoiceNumber = $paymentData['xendit_invoice_id'] ?? 'N/A';
+    $invoiceNumber = $paymentData['xendit_invoice_id'] ?? '-';
     $invoiceDate = date("F j, Y");
     $dueDate = date("F j, Y", strtotime("+1 day"));
 
@@ -340,14 +340,54 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     $mail->isHTML(true);
     $mail->Subject = "Your Booking Invoice";
     $mail->Body = "
-      Hello $customerName,<br><br>
-      Thank you for your payment. Please find your booking invoice below:<br><br>
-      <a href='$pdfLinkUrl' target='_blank'>Download your invoice (PDF)</a><br><br>
-      Booking Code: <strong>$bookingCode</strong><br>
-      Payment Method: {$paymentData['payment_method']}<br>
-      Payment Status: $paymentStatus<br><br>
-      -- Villarosa Booking System
-    ";
+      <div style='font-family: Poppins, sans-serif; max-width: 600px; margin: auto; border:1px solid #ddd; padding: 24px; color: #1f2937; background-color: #ffffff;'>
+        <style>
+          @media only screen and (max-width: 600px) {
+            .email-container {
+              padding: 16px !important;
+            }
+            .email-table td {
+              display: block;
+              width: 100%;
+            }
+          }
+        </style>
+
+        <div class='email-container'>
+          <h2 style='color: #065f46;'>Payment Confirmation</h2>
+          <p style='font-size: 16px;'>Hello <strong>{$bookingData['full_name']}</strong>,</p>
+          <p style='font-size: 15px;'>Thank you for your payment. Your booking receipt is attached, and your details are listed below.</p>
+
+          <table class='email-table' style='width: 100%; font-size: 14px; margin-top: 20px; border-collapse: collapse;'>
+            <tr><td style='padding: 8px 0;'><strong>Room</strong></td><td>{$roomName}</td></tr>
+            <tr><td style='padding: 8px 0;'><strong>Check-in</strong></td><td>{$checkInDate} @ {$checkInTime}</td></tr>
+            <tr><td style='padding: 8px 0;'><strong>Check-out</strong></td><td>{$checkOutDate}</td></tr>
+            <tr><td style='padding: 8px 0;'><strong>Guests</strong></td><td>{$adults} Adult(s), {$children} Child(ren)</td></tr>
+            <tr><td style='padding: 8px 0;'><strong>Booking Code</strong></td><td>{$bookingData['booking_code']}</td></tr>
+            <tr><td style='padding: 8px 0;'><strong>Amount Paid</strong></td><td>₱{$amountFormatted}</td></tr>
+            <tr>
+              <td style='padding: 8px 0;'><strong>Invoice Link</strong></td>
+              <td>" .
+      ($invoiceUrl
+        ? "<a href='{$invoiceUrl}' style='color: #2563eb; text-decoration: underline;'>View Invoice</a>"
+        : "<em>Not available</em>") .
+      "</td>
+            </tr>
+
+            <tr><td style='padding: 8px 0;'><strong>Payment Method</strong></td><td>Xendit (" . ucfirst($data['payment_method'] ?? 'Unknown') . ")</td></tr>
+          </table>
+
+          <div style='margin-top: 24px; text-align: center;'>
+            <a href='https://villarosal.free.nf/php/confirm.php?token={$bookingData['confirmation_token']}' style='display: inline-block; background: #10b981; color: white; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold;'>Confirm Booking</a>
+          </div>
+
+          <p style='margin-top: 24px;'>We look forward to hosting you at <strong>Villa Rosal Beach Resort</strong>.</p>
+
+          <footer style='font-size: 12px; color: #6b7280; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 12px;'>
+            Need help? Email us at <a href='mailto:support@yourhotel.com' style='color: #2563eb;'>support@yourhotel.com</a>
+          </footer>
+        </div>
+      </div>";
 
     $mail->send();
 
