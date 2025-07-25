@@ -344,7 +344,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
       Thank you for your payment. Please find your booking invoice below:<br><br>
       <a href='$pdfLinkUrl' target='_blank'>Download your invoice (PDF)</a><br><br>
       Booking Code: <strong>$bookingCode</strong><br>
-      Payment Method: $ewalletType<br>
+      Payment Method: {$paymentData['payment_method']}<br>
       Payment Status: $paymentStatus<br><br>
       -- Villarosa Booking System
     ";
