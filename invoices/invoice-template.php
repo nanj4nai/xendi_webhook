@@ -100,7 +100,7 @@
     <table class="summary">
       <tr>
         <td><strong>Invoice #:</strong></td>
-        <td><?= $paymentData['xendit_invoice_id'] ?></td>
+        <td><?= $paymentData['xendit_invoice_id'] ?? '—' ?></td>
       </tr>
       <tr>
         <td><strong>Booking Code:</strong></td>
