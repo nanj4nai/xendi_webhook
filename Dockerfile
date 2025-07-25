@@ -20,6 +20,9 @@ RUN composer install --no-dev --optimize-autoloader
 # Copy application code
 COPY . .
 
+# 🔧 FIX: Create writable folder for invoices
+RUN mkdir -p /var/www/html/invoices && chmod -R 777 /var/www/html/invoices
+
 # Enable Apache rewrite module
 RUN a2enmod rewrite
 
