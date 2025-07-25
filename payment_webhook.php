@@ -331,7 +331,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
 
     $baseUrl = $isVillarosa
       ? "https://villarosal.free.nf/php/invoices"
-      : "https://xendit-webhook-lwt7.onrender.com//invoices"; // Replace with your actual Render domain
+      : "https://xendi-webhook.onrender.com/invoices/"; // Replace with your actual Render domain
 
     $pdfLinkUrl = "$baseUrl/$pdfFilename";
 
