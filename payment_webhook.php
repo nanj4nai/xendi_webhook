@@ -73,7 +73,7 @@ $roomData = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // 👇 ADD this to prevent undefined $room
 $room = $roomData;
-$qty = 1;
+
 // 7. Fetch payment record
 $stmt = $pdo->prepare("SELECT * FROM payments WHERE booking_id = ? AND xendit_invoice_id = ?");
 $stmt->execute([$bookingId, $invoiceId]);
@@ -122,6 +122,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     ]);
   }
   try {
+    $qty = isset($qty) && is_numeric($qty) ? (int)$qty : 1;
     $roomName = $roomData['room_name'] ?? 'Room';
     $roomPrice = (float)($roomData['price'] ?? 0);
     $amountFormatted = number_format($payment['amount'], 2);
@@ -272,7 +273,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     }
 
     // ✅ Then use the fresh $payment below
-    $createdUtc = new DateTime($payment['created'] ?? 'now', new DateTimeZone('UTC'));
+    $createdUtc = new DateTime($payment['created_at'] ?? 'now', new DateTimeZone('UTC'));
     $createdUtc->setTimezone(new DateTimeZone('Asia/Manila'));
     $createdPH = $createdUtc->format('F j, Y \a\t g:i A');
 
@@ -295,52 +296,60 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     ]);
     $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($qrData) . '&size=200x200';
 
+    $bookingCode = $bookingData['booking_code'] ?? 'UNKNOWN';
+    $pdfFilename = "booking_invoice_{$bookingCode}.pdf";
+
+    // ✅ Fix #1: Use consistent folder for saving invoice
     $invoiceDir = __DIR__ . "/invoices";
     if (!is_dir($invoiceDir)) {
       mkdir($invoiceDir, 0777, true);
     }
     $pdfSavePath = "$invoiceDir/$pdfFilename";
 
+    // ✅ Fix #2: Choose correct invoice template path
+    $templatePath = __DIR__ . '/invoices/invoice-template.php';
+    if (!file_exists($templatePath)) {
+      $templatePath = __DIR__ . '/php/invoices/invoice-template.php';
+    }
 
-    file_put_contents($pdfSavePath, $pdfOutput);
     // Generate the PDF as usual
     ob_start();
-    include 'invoices/invoice-template.php';
+    include $templatePath;
     $html = ob_get_clean();
 
     $dompdf->loadHtml($html);
     $dompdf->setPaper('A4', 'portrait');
     $dompdf->render();
 
-    // Output PDF
+    // ✅ Save the rendered PDF to the folder
     $pdfOutput = $dompdf->output();
-
-    $bookingCode = $bookingData['booking_code'] ?? 'UNKNOWN';
-
-    // ✅ Save PDF file in public invoices/ folder
-    $pdfFilename = "booking_invoice_{$bookingCode}.pdf";
-    $pdfSavePath = __DIR__ . "/php/invoices/$pdfFilename"; // Must match public path
     file_put_contents($pdfSavePath, $pdfOutput);
 
-    // ✅ Create public URL to send in the email
-    $pdfLinkUrl = "https://villarosal.free.nf/php/invoices/$pdfFilename";
+    // ✅ Fix #3: Generate dynamic public URL based on domain
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $isVillarosa = strpos($host, 'villarosal') !== false;
+
+    $baseUrl = $isVillarosa
+      ? "https://villarosal.free.nf/php/invoices"
+      : "https://xendit-webhook-lwt7.onrender.com//invoices"; // Replace with your actual Render domain
+
+    $pdfLinkUrl = "$baseUrl/$pdfFilename";
 
     // 📧 Email the link
+    $mail->addAttachment($pdfSavePath); // Attach the generated PDF
     $mail->isHTML(true);
     $mail->Subject = "Your Booking Invoice";
     $mail->Body = "
-  Hello $customerName,<br><br>
-  Thank you for your payment. Please find your booking invoice below:<br><br>
-  <a href='$pdfLinkUrl' target='_blank'>Download your invoice (PDF)</a><br><br>
-  Booking Code: <strong>$bookingCode</strong><br>
-  Payment Method: $ewalletType<br>
-  Payment Status: $paymentStatus<br><br>
-  -- Villarosa Booking System
-";
+      Hello $customerName,<br><br>
+      Thank you for your payment. Please find your booking invoice below:<br><br>
+      <a href='$pdfLinkUrl' target='_blank'>Download your invoice (PDF)</a><br><br>
+      Booking Code: <strong>$bookingCode</strong><br>
+      Payment Method: $ewalletType<br>
+      Payment Status: $paymentStatus<br><br>
+      -- Villarosa Booking System
+    ";
 
     $mail->send();
-
-
 
     file_put_contents("webhook_debug.txt", date("Y-m-d H:i:s") . " - Email sent to {$bookingData['email']}\n", FILE_APPEND);
   } catch (Exception $e) {
