@@ -214,7 +214,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
           </table>
 
           <div style='margin-top: 24px; text-align: center;'>
-            <a href='https://villa-rosal-beach-resort.fwh.is/php/confirm.php?token={$bookingData['confirmation_token']}' style='display: inline-block; background: #10b981; color: white; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold;'>Confirm Booking</a>
+            <a href='https://villarosal.free.nf/php/confirm.php?token={$bookingData['confirmation_token']}' style='display: inline-block; background: #10b981; color: white; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold;'>Confirm Booking</a>
           </div>
 
           <p style='margin-top: 24px;'>We look forward to hosting you at <strong>Villa Rosal Beach Resort</strong>.</p>
@@ -245,7 +245,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     $customerEmail = $booking['email'] ?? '—';
     $customerPhone = $booking['contact_number'] ?? '—'; // 🔁 Was 'phone_number'
 
-    $logoUrl = "https://villa-rosal-beach-resort.fwh.is/img/logo.png";
+    $logoUrl = "https://villarosal.free.nf/img/logo.png";
 
     $checkIn = date("F j, Y", strtotime($booking['check_in_date'])) . " " . date("g:i A", strtotime($booking['check_in_time']));
     $checkOut = date("F j, Y", strtotime($booking['check_out_date'] ?? '+1 day'));
@@ -330,7 +330,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     $isVillarosa = strpos($host, 'villarosal') !== false;
 
     $baseUrl = $isVillarosa
-      ? "https://villa-rosal-beach-resort.fwh.is/php/invoices"
+      ? "https://villarosal.free.nf/php/invoices"
       : "https://xendi-webhook.onrender.com/invoices/"; // Replace with your actual Render domain
 
     $pdfLinkUrl = "$baseUrl/$pdfFilename";
@@ -378,7 +378,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
           </table>
 
           <div style='margin-top: 24px; text-align: center;'>
-            <a href='https://villa-rosal-beach-resort.fwh.is/php/confirm.php?token={$bookingData['confirmation_token']}' style='display: inline-block; background: #10b981; color: white; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold;'>Confirm Booking</a>
+            <a href='https://villarosal.free.nf/php/confirm.php?token={$bookingData['confirmation_token']}' style='display: inline-block; background: #10b981; color: white; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold;'>Confirm Booking</a>
           </div>
 
           <p style='margin-top: 24px;'>We look forward to hosting you at <strong>Villa Rosal Beach Resort</strong>.</p>
