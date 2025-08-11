@@ -160,8 +160,8 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     $bookingData['booking_code'] = $booking['booking_code'] ?? 'UNKNOWN';
     $bookingData['check_in_date'] = $booking['check_in_date'];
     $bookingData['check_in_time'] = $booking['check_in_time'];
+    $bookingData['check_out_time'] = $booking['check_out_time'] ?? '—';
     $bookingData['check_out_date'] = $bookingData['check_out_date'] ?? '—';
-    $bookingData['check_out_time'] = $bookingData['check_out_time'] ?? '—';
     $paymentData['qty'] = $paymentData['qty'] ?? 1;
     $paymentData['xendit_invoice_id'] = $paymentData['xendit_invoice_id'] ?? '—';
     $bookingData['adults'] = $booking['adults'] ?? 2;
