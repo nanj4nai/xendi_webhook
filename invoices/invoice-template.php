@@ -146,7 +146,7 @@
       </tr>
       <tr>
         <td><strong>Check-out:</strong></td>
-        <td><?= $bookingData['check_out_date'] ?? '—' ?></td>
+        <td><?= $bookingData['check_out_date'] ?> @ <?= $bookingData['check_out_time'] ?></td>
       </tr>
       <tr>
         <td><strong>Guests:</strong></td>
