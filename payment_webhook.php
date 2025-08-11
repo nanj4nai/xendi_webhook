@@ -161,6 +161,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     $bookingData['check_in_date'] = $booking['check_in_date'];
     $bookingData['check_in_time'] = $booking['check_in_time'];
     $bookingData['check_out_date'] = $bookingData['check_out_date'] ?? '—';
+    $bookingData['check_out_time'] = $bookingData['check_out_time'] ?? '—';
     $paymentData['qty'] = $paymentData['qty'] ?? 1;
     $paymentData['xendit_invoice_id'] = $paymentData['xendit_invoice_id'] ?? '—';
     $bookingData['adults'] = $booking['adults'] ?? 2;
@@ -169,6 +170,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     $checkInDate = $bookingData['check_in_date'] ?? '—';
     $checkInTime = $bookingData['check_in_time'] ?? '—';
     $checkOutDate = $bookingData['check_out_date'] ?? '—';
+    $checkOutTime = $bookingData['check_out_date'] ?? '—';
     $adults = $bookingData['adults'] ?? 1;
     $children = $bookingData['children'] ?? 0;
     $invoiceId = $payment['xendit_invoice_id'] ?? null;
@@ -197,7 +199,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
           <table class='email-table' style='width: 100%; font-size: 14px; margin-top: 20px; border-collapse: collapse;'>
             <tr><td style='padding: 8px 0;'><strong>Room</strong></td><td>{$roomName}</td></tr>
             <tr><td style='padding: 8px 0;'><strong>Check-in</strong></td><td>{$checkInDate} @ {$checkInTime}</td></tr>
-            <tr><td style='padding: 8px 0;'><strong>Check-out</strong></td><td>{$checkOutDate}</td></tr>
+            <tr><td style='padding: 8px 0;'><strong>Check-out</strong></td><td>{$checkOutDate} @ {$checkOutTime}</td></tr>
             <tr><td style='padding: 8px 0;'><strong>Guests</strong></td><td>{$adults} Adult(s), {$children} Child(ren)</td></tr>
             <tr><td style='padding: 8px 0;'><strong>Booking Code</strong></td><td>{$bookingData['booking_code']}</td></tr>
             <tr><td style='padding: 8px 0;'><strong>Amount Paid</strong></td><td>₱{$amountFormatted}</td></tr>
@@ -361,7 +363,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
           <table class='email-table' style='width: 100%; font-size: 14px; margin-top: 20px; border-collapse: collapse;'>
             <tr><td style='padding: 8px 0;'><strong>Room</strong></td><td>{$roomName}</td></tr>
             <tr><td style='padding: 8px 0;'><strong>Check-in</strong></td><td>{$checkInDate} @ {$checkInTime}</td></tr>
-            <tr><td style='padding: 8px 0;'><strong>Check-out</strong></td><td>{$checkOutDate}</td></tr>
+            <tr><td style='padding: 8px 0;'><strong>Check-out</strong></td><td>{$checkOutDate} @ {$checkOutTime}</td></tr>
             <tr><td style='padding: 8px 0;'><strong>Guests</strong></td><td>{$adults} Adult(s), {$children} Child(ren)</td></tr>
             <tr><td style='padding: 8px 0;'><strong>Booking Code</strong></td><td>{$bookingData['booking_code']}</td></tr>
             <tr><td style='padding: 8px 0;'><strong>Amount Paid</strong></td><td>₱{$amountFormatted}</td></tr>
