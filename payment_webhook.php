@@ -170,7 +170,7 @@ if ($paymentStatus === 'paid' && $bookingData['is_confirmed'] != true) {
     $checkInDate = $bookingData['check_in_date'] ?? '—';
     $checkInTime = $bookingData['check_in_time'] ?? '—';
     $checkOutDate = $bookingData['check_out_date'] ?? '—';
-    $checkOutTime = $bookingData['check_out_date'] ?? '—';
+    $checkOutTime = $bookingData['check_out_time'] ?? '—';
     $adults = $bookingData['adults'] ?? 1;
     $children = $bookingData['children'] ?? 0;
     $invoiceId = $payment['xendit_invoice_id'] ?? null;
