@@ -154,35 +154,37 @@
       </tr>
     </table>
 
-    <!-- Payment -->
-    <div class="section-title">Payment Summary</div>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Description</th>
-          <th>Qty</th>
-          <th>Unit Price</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><?= $roomName ?></td>
-          <td><?= $paymentData['qty'] ?? 1 ?></td>
-          <td><?= number_format($paymentData['base_price'], 2) ?> pesos</td>
-          <td><?= number_format($paymentData['base_price'] * ($paymentData['qty'] ?? 1), 2) ?> pesos</td>
-        </tr>
-        <tr>
-          <td colspan="3" style="text-align:right;"><strong>Processing Fee</strong></td>
-          <td><?= number_format($paymentData['fee'], 2) ?> pesos</td>
-        </tr>
-        <tr>
-          <td colspan="3" style="text-align:right;"><strong>Total Amount</strong></td>
-          <td><strong><?= number_format($paymentData['amount'], 2) ?> pesos</strong></td>
-        </tr>
-      </tbody>
-    </table>
-
+<!-- Payment -->
+<div class="section-title">Payment Summary</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Description</th>
+      <th>Qty</th>
+      <th>Nights</th>
+      <th>Unit Price</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><?= htmlspecialchars($roomName) ?></td>
+      <td><?= $qty ?></td>
+      <td><?= $nights ?></td>
+      <td><?= number_format($base_price, 2) ?> pesos</td>
+      <td><?= number_format($subtotal, 2) ?> pesos</td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align:right;"><strong>Processing Fee (12%)</strong></td>
+      <td><?= number_format($processing_fee, 2) ?> pesos</td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align:right;"><strong>Total Amount</strong></td>
+      <td><strong><?= number_format($total_amount, 2) ?> pesos</strong></td>
+    </tr>
+  </tbody>
+</table>
+    
     <!-- QR -->
     <div class="qr">
       <p style="margin-bottom: 5px;">Scan to confirm booking</p>
