@@ -140,14 +140,14 @@
         <td><strong>Room:</strong></td>
         <td><?= $roomName ?? 'Room N/A' ?></td>
       </tr>
-      <tr>
+    <tr>
         <td><strong>Check-in:</strong></td>
-        <td><?= $bookingData['check_in_date'] ?> @ <?= $bookingData['check_in_time'] ?></td>
-      </tr>
-      <tr>
-        <td><strong>Check-out:</strong></td>
-        <td><?= $bookingData['check_out_date'] ?> @ <?= $bookingData['check_out_time'] ?></td>
-      </tr>
+        <td><?= $checkInFormatted ?> @ <?= htmlspecialchars($checkInTime) ?></td>
+    </tr>
+    <tr>
+      <td><strong>Check-out:</strong></td>
+      <td><?= $checkOutFormatted ?> @ <?= htmlspecialchars($checkOutTime) ?></td>
+    </tr>
       <tr>
         <td><strong>Guests:</strong></td>
         <td><?= $bookingData['adults'] ?> Adults, <?= $bookingData['children'] ?> Children</td>
@@ -167,13 +167,14 @@
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td><?= htmlspecialchars($roomName) ?></td>
-      <td><?= $qty ?></td>
-      <td><?= $nights ?></td>
-      <td><?= number_format($base_price, 2) ?> pesos</td>
-      <td><?= number_format($subtotal, 2) ?> pesos</td>
-    </tr>
+<!-- Payment row -->
+<tr>
+  <td><?= htmlspecialchars($roomName) ?></td>
+  <td><?= (int)$qty ?></td>
+  <td><?= (int)$nights ?></td>
+  <td><?= number_format($base_price, 2) ?> pesos</td>
+  <td><?= number_format($subtotal, 2) ?> pesos</td>
+</tr>
     <tr>
       <td colspan="4" style="text-align:right;"><strong>Processing Fee (12%)</strong></td>
       <td><?= number_format($processing_fee, 2) ?> pesos</td>
